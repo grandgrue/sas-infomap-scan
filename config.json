@@ -1,0 +1,36 @@
+{
+    "path_ignore": [
+        "/archiv/",
+        "/_archiv/",
+        "/Archiv/",
+        "/_Archiv/",
+        "/archive/",
+        "/Archive",
+        "/alt/",
+        "/Alt/",
+        "/Archiv_nicht-l\u00f6schen/",
+        "/00_Archiv/",
+        "/0_Archiv/",
+        "/9_Archiv/",
+        "/X_Archiv/",
+        "/99_Alte_Anfrage_vor_InfoDesk/",
+		"/neustes Archiv/",
+		"/Altes/"
+    ],
+    "path_list": [
+        "J:/Analysen_Methoden",
+        "J:/Datenmanagement",
+        "J:/InfoDesk",
+        "O:/Auswertungen",
+        "O:/Output",
+        "O:/Projekte",
+        "O:/Publikationen",
+        "P:/Automat",
+        "P:/Hotellerie",
+        "P:/OGD/Daten",
+        "P:/SAS/Fuehrungskennzahlen",
+        "P:/SAS/Siedlungsbericht/PROD"
+    ],
+    "temp_path": "H:/Daten/Project/Desktop-2020/SampleSEG",
+    "write_to_excel": false
+}
