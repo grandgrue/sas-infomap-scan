@@ -72,5 +72,6 @@ The output csv of this example would look like this:
 | BVS Wegzug int | AnzWezuWir      | N:\Directory\Any Project.egp |
 | BVS Wegzug int | HerkunftSort    | N:\Directory\Any Project.egp |
 | BVS Wegzug int | ExportVersionCd | N:\Directory\Any Project.egp |
+
 Note that the filenames contain backslashes for easier further processing unter Windows.
 
