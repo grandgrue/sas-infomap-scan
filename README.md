@@ -65,13 +65,13 @@ libname _egimle clear;
 
 The output csv of this example would look like this:
 
-| infomap_name   | variables_keep  | filename                     |
-| :------------- | :-------------- | :--------------------------- | 
-| BVS Wegzug int | FilterJahr      | N:\Directory\Any Project.egp |
-| BVS Wegzug int | StichtagDatJahr | N:\Directory\Any Project.egp |
-| BVS Wegzug int | AnzWezuWir      | N:\Directory\Any Project.egp |
-| BVS Wegzug int | HerkunftSort    | N:\Directory\Any Project.egp |
-| BVS Wegzug int | ExportVersionCd | N:\Directory\Any Project.egp |
+| infomap_name    | variables_keep  | filename                     |
+| :-------------- | :-------------- | :--------------------------- | 
+| BVS Wegzug int. | FilterJahr      | N:\Directory\Any Project.egp |
+| BVS Wegzug int. | StichtagDatJahr | N:\Directory\Any Project.egp |
+| BVS Wegzug int. | AnzWezuWir      | N:\Directory\Any Project.egp |
+| BVS Wegzug int. | HerkunftSort    | N:\Directory\Any Project.egp |
+| BVS Wegzug int. | ExportVersionCd | N:\Directory\Any Project.egp |
 
 Note that the filenames contain backslashes for easier further processing unter Windows.
 
