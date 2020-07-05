@@ -32,5 +32,5 @@
         "P:/SAS/Siedlungsbericht/PROD"
     ],
     "temp_path": "H:/Daten/Project/Desktop-2020/SampleSEG",
-    "write_to_excel": false
+    "write_to_excel": true
 }
