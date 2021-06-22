@@ -89,6 +89,7 @@ def extract_infomap_code(code_file, file_encoding):
     
     with open(code_file, encoding=file_encoding) as f:
         content = f.readlines()
+        im_list = {}
         for x in content:
             line = x.strip()
             i = i + 1
