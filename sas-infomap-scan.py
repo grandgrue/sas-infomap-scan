@@ -35,6 +35,20 @@ def proj_unzip(zip_path, extract_filename, extract_path):
             print('ERROR: Not unzippable: ' + zip_path) 
             return
 
+# Python program to convert a list to string
+# Function to convert  
+def listToString(s): 
+    
+    # initialize an empty string
+    str1 = "" 
+    
+    # traverse in the string  
+    for ele in s: 
+        str1 += ele  
+    
+    # return string  
+    return str1 
+
 # read project.xml as a textfile an find infomap codeblocks
 
 # libname _egimle sasioime
@@ -83,6 +97,7 @@ def extract_infomap_code(code_file, file_encoding):
 
     infomap_list_code = []
     keep_list = []
+    modby_list = []
     is_im_block = False
     is_keep_block = False
     i=0
@@ -90,15 +105,34 @@ def extract_infomap_code(code_file, file_encoding):
     with open(code_file, encoding=file_encoding) as f:
         content = f.readlines()
         im_list = {}
+
+        # find people that modified the code
+        for x in content:
+            line = x.strip()
+            modby_search = re.search('<ModifiedBy>(.+?)<', line, re.IGNORECASE)
+            
+            if modby_search:
+                modby_person = modby_search.group(1)
+                modby_list.append(modby_person)
+
+        # Remove duplicates by converting to a dictionary an back to a list
+        modby_list = list(dict.fromkeys(modby_list))
+        # Convert list to comma separated string
+        modby_people = ", ".join(modby_list)
+
+        # find used variables
         for x in content:
             line = x.strip()
             i = i + 1
+
             
             if line == "libname _egimle sasioime": 
                 # code block with libname starting
                 im_list = {}
                 keep_list = []
                 is_im_block = True
+                im_list["modified_by"] = modby_people
+                
             if line == "libname _egimle clear;": 
                 # end of information map libname assignement
                 if not "variables_keep" in im_list:
@@ -131,11 +165,12 @@ def extract_infomap_code(code_file, file_encoding):
                     # the following lines are recognized as variable names
                     keep_list = []
                     is_keep_block = True               
-         
+ 
+ 
     return infomap_list_code
 
 # Read configuration
-with open('config.json', 'r') as f:
+with open('config.json', 'r', encoding="utf-8") as f:
     config = json.load(f)
 temp_path = config['temp_path']
 path_ignore = config['path_ignore']
@@ -222,6 +257,13 @@ for index, row in df_list_seg.iterrows():
             # add the filename and store in a dataframe
             df_list_code = pd.DataFrame(im_list_code)
             df_list_code['filename']=row["seg_path"].replace('/', '\\')
+            
+            aufgabenr_search = re.search('/(\d{4}-\d{2})_', row["seg_path"], re.IGNORECASE)
+            
+            if aufgabenr_search:
+                aufgabenr = aufgabenr_search.group(1)
+                df_list_code['aufgabe_nr']=aufgabenr
+            
             df_im_code = df_im_code.append(df_list_code, ignore_index = True)
 
 # loop through all the SAS code files
