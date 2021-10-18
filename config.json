@@ -18,7 +18,18 @@
 		"/Altes/"
     ],
     "path_list": [
-		"J:/InfoDesk/_Anfragen"
+        "J:/Analysen_Methoden",
+        "J:/Datenmanagement",
+        "J:/InfoDesk",
+        "O:/Auswertungen",
+        "O:/Output",
+        "O:/Projekte",
+        "O:/Publikationen",
+        "P:/Automat",
+        "P:/Hotellerie",
+        "P:/OGD/Daten",
+        "P:/SAS/Fuehrungskennzahlen",
+        "P:/SAS/Siedlungsbericht/PROD"
     ],
     "temp_path": "H:/Daten/Project/Desktop-2020/SampleSEG",
     "write_to_excel": true
