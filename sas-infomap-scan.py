@@ -243,7 +243,7 @@ if write_to_excel:
 now = datetime.datetime.now()
 print ("Start extracting informationmaps: " + now.strftime("%Y-%m-%d %H:%M:%S"))
 
-df_im_code = pd.DataFrame()
+df_im_code = pd.DataFrame([],dtype=pd.StringDtype())
 
 # loop through all the SAS Enterprise Guide files
 for index, row in df_list_seg.iterrows():
@@ -257,14 +257,11 @@ for index, row in df_list_seg.iterrows():
             # add the filename and store in a dataframe
             df_list_code = pd.DataFrame(im_list_code)
             df_list_code['filename']=row["seg_path"].replace('/', '\\')
-            
-            aufgabenr_search = re.search('/(\d{4}-\d{2})_', row["seg_path"], re.IGNORECASE)
-            
-            if aufgabenr_search:
-                aufgabenr = aufgabenr_search.group(1)
-                df_list_code['aufgabe_nr']=aufgabenr
-            
-            df_im_code = df_im_code.append(df_list_code, ignore_index = True)
+#            aufgabenr_search = re.search('/(\d{4}-\d{2})_', row["seg_path"], re.IGNORECASE)
+#            if aufgabenr_search:
+#                aufgabenr = aufgabenr_search.group(1)
+#                df_list_code['aufgabe_nr']=aufgabenr
+            df_im_code = pd.concat([df_im_code, df_list_code])
 
 # loop through all the SAS code files
 for index, row in df_list_sas.iterrows():
