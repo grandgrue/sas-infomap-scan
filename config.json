@@ -1,5 +1,8 @@
 {
     "path_ignore": [
+        "/Archiv",
+        "/Achiv",
+        "Archiv/",
         "/archiv/",
         "/_archiv/",
         "/Archiv/",
@@ -15,9 +18,13 @@
         "/X_Archiv/",
         "/99_Alte_Anfrage_vor_InfoDesk/",
 		"/neustes Archiv/",
-		"/Altes/"
+		"/Altes/",
+		"/ALTES/"
     ],
     "path_list": [
+        "O:/Auswertungen"
+    ],
+    "full_path_list_to-rename": [
         "J:/Analysen_Methoden",
         "J:/Datenmanagement",
         "J:/InfoDesk",
