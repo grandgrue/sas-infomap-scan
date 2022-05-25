@@ -16,23 +16,44 @@ import pandas as pd
 import numpy as np
 import datetime
 import json
+import shutil
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
 # unzip one file from a zip archive to a given directory
 def proj_unzip(zip_path, extract_filename, extract_path):
-    if len(zip_path)>255:
-        # ZipFile does not support long paths
-        print("ERROR: Path too long: " + zip_path)
-        return
+    
+    if not(os.path.exists(zip_path)):
+        # Some filenames are not only too long for python to read them,
+        # they're even too long to be copied to another directory
+        print("WARNING: Absolute filename too long for OS to recognize file.")
+        print("-> Move or rename file manually")
+        print("File: " + zip_path)
+        NamesTooLongOS.append(zip_path)
+
     else:
+        if len(zip_path)>255:
+        
+            tmp_file = extract_path + "/tmp.egp"
+            
+            if not(os.path.exists(extract_path)):
+                os.makedirs(extract_path)
+            # ZipFile does not support long paths
+            print("WARNING: Path too long for python to extract: " + zip_path)
+            print("Copying file to local file " + tmp_file)
+            shutil.copy(zip_path, tmp_file)
+            zip_path_final = tmp_file 
+        else:
+            zip_path_final = zip_path
+            
         try:
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            with zipfile.ZipFile(zip_path_final, 'r') as zip_ref:
                 zip_ref.extract(extract_filename, path=extract_path)
                 return extract_path + "/" + extract_filename
         except Exception: 
-            print('ERROR: Not unzippable: ' + zip_path) 
+            print('ERROR: Not unzippable: ' + zip_path_final)
+            NotUnzippable.append(zip_path_final)
             return
 
 # Python program to convert a list to string
@@ -101,6 +122,7 @@ def extract_infomap_code(code_file, file_encoding):
     is_im_block = False
     is_keep_block = False
     i=0
+    pattern_filter_vars = '\\(([^( ]+) '
     
     with open(code_file, encoding=file_encoding) as f:
         content = f.readlines()
@@ -135,9 +157,9 @@ def extract_infomap_code(code_file, file_encoding):
                 
             if line == "libname _egimle clear;": 
                 # end of information map libname assignement
-                if not "variables_keep" in im_list:
+                if not "variables_keep_or_filter" in im_list:
                      # No variables could be extracted, that is not good
-                     im_list["variables_keep"] = ["ERROR no variables found"]
+                     im_list["variables_keep_or_filter"] = ["ERROR no variables found"]
                 infomap_list_code.append(im_list)
                 is_keep_block = False
                 is_im_block = False
@@ -152,7 +174,7 @@ def extract_infomap_code(code_file, file_encoding):
                     # check if the block ends either with a filter or the closing bracket and semicolon
                     if line[-2:] == ");" or line[0:8] == "filter=(":
                         # end of code block with keep variable definitions
-                        im_list["variables_keep"] = keep_list
+                        im_list["variables_keep_or_filter"] = keep_list
                         is_keep_block = False
                     else:
                         # check if the line is not empty, is not a comment and does not use macros
@@ -165,7 +187,13 @@ def extract_infomap_code(code_file, file_encoding):
                     # the following lines are recognized as variable names
                     keep_list = []
                     is_keep_block = True               
- 
+                    
+                if line[0:8] == "filter=(":
+                    # also include filter variables in the scan. they're not necessarily
+                    # included in the keep statement
+                    filter_list = list(set(re.findall(pattern_filter_vars, line, re.IGNORECASE)))
+                    for filter_var in filter_list:
+                        keep_list.append(filter_var)
  
     return infomap_list_code
 
@@ -232,6 +260,9 @@ df_list_seg = pd.DataFrame(list_seg, columns = ['seg_path'])
 
 df_list_sas = pd.DataFrame(list_sas, columns = ['sas_path'])
 
+NotUnzippable = []
+NamesTooLongOS = []
+
 if write_to_excel:
     with pd.ExcelWriter(excel_out, engine="openpyxl", mode='w') as writer:
         df_list_seg.to_excel(writer, sheet_name='SEG-Projects')
@@ -243,7 +274,7 @@ if write_to_excel:
 now = datetime.datetime.now()
 print ("Start extracting informationmaps: " + now.strftime("%Y-%m-%d %H:%M:%S"))
 
-df_im_code = pd.DataFrame([],dtype=pd.StringDtype())
+df_im_code = pd.DataFrame()
 
 # loop through all the SAS Enterprise Guide files
 for index, row in df_list_seg.iterrows():
@@ -257,11 +288,14 @@ for index, row in df_list_seg.iterrows():
             # add the filename and store in a dataframe
             df_list_code = pd.DataFrame(im_list_code)
             df_list_code['filename']=row["seg_path"].replace('/', '\\')
-#            aufgabenr_search = re.search('/(\d{4}-\d{2})_', row["seg_path"], re.IGNORECASE)
-#            if aufgabenr_search:
-#                aufgabenr = aufgabenr_search.group(1)
-#                df_list_code['aufgabe_nr']=aufgabenr
-            df_im_code = pd.concat([df_im_code, df_list_code])
+            
+            aufgabenr_search = re.search('/(\d{4}-\d{2})_', row["seg_path"], re.IGNORECASE)
+            
+            if aufgabenr_search:
+                aufgabenr = aufgabenr_search.group(1)
+                df_list_code['aufgabe_nr']=aufgabenr
+            
+            df_im_code = df_im_code.append(df_list_code, ignore_index = True)
 
 # loop through all the SAS code files
 for index, row in df_list_sas.iterrows():
@@ -275,7 +309,7 @@ for index, row in df_list_sas.iterrows():
 
 if df_im_code.empty==False:
     # transpose the variables column containing a list of variables to a new row variables
-    lst_col = 'variables_keep'
+    lst_col = 'variables_keep_or_filter'
     df_im_transv = pd.DataFrame({
           col:np.repeat(df_im_code[col].values, df_im_code[lst_col].str.len())
           for col in df_im_code.columns.drop(lst_col)}
@@ -290,5 +324,7 @@ if df_im_code.empty==False:
         
     df_im_transv.to_csv (csv_out, index = False, header=True)
  
+pd.DataFrame(NotUnzippable, columns = ["path"]).to_excel(temp_path + "/notunzippable.xlsx")
+pd.DataFrame(NamesTooLongOS, columns = ["path"]).to_excel(temp_path + "/NamesTooLongOS.xlsx")
 now = datetime.datetime.now()
 print ("Stop: " + now.strftime("%Y-%m-%d %H:%M:%S"))
