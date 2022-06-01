@@ -70,6 +70,22 @@ def listToString(s):
     # return string  
     return str1 
 
+
+# Function to extract variables from filter block
+def extract_filter_vars(string):
+
+  pattern = '\\(+(.+?)(;|IS MISSING|=|CONTAINS|LIKE|AND|>|<)+'
+  
+  v0 = re.findall(pattern, string, re.IGNORECASE)
+  v1 = [x[0].strip() for x in v0]
+  v2 = [re.sub('&lt', '', x) for x in v1]
+  v3 = [re.sub('&gt', '', x).strip() for x in v2]
+  
+  v = list(set(v3))
+  
+  return v 
+
+  
 # read project.xml as a textfile an find infomap codeblocks
 
 # libname _egimle sasioime
@@ -122,7 +138,6 @@ def extract_infomap_code(code_file, file_encoding):
     is_im_block = False
     is_keep_block = False
     i=0
-    pattern_filter_vars = '\\(([^( ]+) '
     
     with open(code_file, encoding=file_encoding) as f:
         content = f.readlines()
@@ -189,9 +204,9 @@ def extract_infomap_code(code_file, file_encoding):
                     is_keep_block = True               
                     
                 if line[0:8] == "filter=(":
-                    # also include filter variables in the scan. they're not necessarily
+                    # also seperately scan the filter statement, as they're not necessarily
                     # included in the keep statement
-                    filter_list = list(set(re.findall(pattern_filter_vars, line, re.IGNORECASE)))
+                    filter_list = extract_filter_vars(line)
                     for filter_var in filter_list:
                         keep_list.append(filter_var)
  
