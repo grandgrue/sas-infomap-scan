@@ -310,7 +310,7 @@ for index, row in df_list_seg.iterrows():
                 aufgabenr = aufgabenr_search.group(1)
                 df_list_code['aufgabe_nr']=aufgabenr
             
-            df_im_code = df_im_code.append(df_list_code, ignore_index = True)
+            df_im_code = df_im_code._append(df_list_code, ignore_index = True)
 
 # loop through all the SAS code files
 for index, row in df_list_sas.iterrows():
