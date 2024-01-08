@@ -320,7 +320,7 @@ for index, row in df_list_sas.iterrows():
         # add the filename and store in a dataframe
         df_list_code = pd.DataFrame(im_list_code)
         df_list_code['filename']=row["sas_path"].replace('/', '\\')
-        df_im_code = df_im_code.append(df_list_code, ignore_index = True)
+        df_im_code = df_im_code._append(df_list_code, ignore_index = True)
 
 if df_im_code.empty==False:
     # transpose the variables column containing a list of variables to a new row variables
